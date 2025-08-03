@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="بطاقتي الرقمية - تجميع جميع روابط حساباتي في مكان واحد">
+    <meta property="og:title" content="بطاقتي الرقمية">
+    <meta property="og:description" content="مرحباً! أنا هنا لأشارككم عالمي">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="https://picsum.photos/seed/profile/150/150.jpg">
     <title>بطاقتي الرقمية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -410,4 +416,381 @@
                 icon: 'fas fa-globe',
                 gradient: 'from-purple-500 to-indigo-600',
                 deepLink: (url) => url,
-                webLink: 
+                webLink: (url) => url
+            }
+        };
+
+        // الحصول على رابط الصفحة الحالي
+        function getCurrentUrl() {
+            // إزالة أي معلمات من الرابط
+            return window.location.origin + window.location.pathname;
+        }
+
+        // الحصول على عنوان الصفحة
+        function getPageTitle() {
+            const userName = document.getElementById('userName').textContent;
+            return `${userName} - بطاقتي الرقمية`;
+        }
+
+        // تحديث meta tags
+        function updateMetaTags() {
+            const url = getCurrentUrl();
+            const title = getPageTitle();
+            const description = document.getElementById('userDescription').textContent;
+            const profileImage = document.getElementById('profileImage').src;
+            
+            // تحديث Open Graph tags
+            document.querySelector('meta[property="og:title"]').content = title;
+            document.querySelector('meta[property="og:description"]').content = description;
+            document.querySelector('meta[property="og:url"]').content = url;
+            document.querySelector('meta[property="og:image"]').content = profileImage;
+            
+            // تحديث عنوان الصفحة
+            document.title = title;
+        }
+
+        // تبديل قائمة المشاركة
+        function toggleShareMenu() {
+            const menu = document.getElementById('shareMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // نسخ الرابط
+        async function copyLink() {
+            try {
+                await navigator.clipboard.writeText(getCurrentUrl());
+                showNotification('تم نسخ الرابط بنجاح!', 'success');
+                incrementShareCount();
+                toggleShareMenu();
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = getCurrentUrl();
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('تم نسخ الرابط بنجاح!', 'success');
+                incrementShareCount();
+                toggleShareMenu();
+            }
+        }
+
+        // المشاركة عبر WhatsApp
+        function shareOnWhatsApp() {
+            const text = `شاهد بطاقتي الرقمية: ${getPageTitle()}\n${getCurrentUrl()}`;
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+            incrementShareCount();
+            toggleShareMenu();
+        }
+
+        // المشاركة عبر Facebook
+        function shareOnFacebook() {
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getCurrentUrl())}`;
+            window.open(url, '_blank', 'width=600,height=400');
+            incrementShareCount();
+            toggleShareMenu();
+        }
+
+        // المشاركة عبر Twitter
+        function shareOnTwitter() {
+            const text = `شاهد بطاقتي الرقمية: ${getPageTitle()}`;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getCurrentUrl())}`;
+            window.open(url, '_blank', 'width=600,height=400');
+            incrementShareCount();
+            toggleShareMenu();
+        }
+
+        // المشاركة عبر Telegram
+        function shareOnTelegram() {
+            const text = `شاهد بطاقتي الرقمية: ${getPageTitle()}\n${getCurrentUrl()}`;
+            const url = `https://t.me/share/url?url=${encodeURIComponent(getCurrentUrl())}&text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+            incrementShareCount();
+            toggleShareMenu();
+        }
+
+        // المشاركة عبر البريد الإلكتروني
+        function shareViaEmail() {
+            const subject = encodeURIComponent(getPageTitle());
+            const body = encodeURIComponent(`شاهد بطاقتي الرقمية:\n\n${getCurrentUrl()}`);
+            const url = `mailto:?subject=${subject}&body=${body}`;
+            window.location.href = url;
+            incrementShareCount();
+            toggleShareMenu();
+        }
+
+        // المشاركة الأصلية (Web Share API)
+        function nativeShare() {
+            if (navigator.share) {
+                navigator.share({
+                    title: getPageTitle(),
+                    text: 'شاهد بطاقتي الرقمية',
+                    url: getCurrentUrl()
+                }).then(() => {
+                    incrementShareCount();
+                    toggleShareMenu();
+                }).catch(() => {
+                    toggleShareMenu();
+                });
+            } else {
+                showNotification('متصفحك لا يدعم المشاركة الأصلية', 'error');
+                toggleShareMenu();
+            }
+        }
+
+        // زيادة عداد المشاركات
+        function incrementShareCount() {
+            let count = localStorage.getItem('shareCount') || 0;
+            count = parseInt(count) + 1;
+            localStorage.setItem('shareCount', count);
+            document.getElementById('shareCount').textContent = count;
+        }
+
+        // تحميل عداد المشاركات
+        function loadShareCount() {
+            const count = localStorage.getItem('shareCount') || 0;
+            document.getElementById('shareCount').textContent = count;
+        }
+
+        // إغلاق القائمة عند النقر خارجها
+        document.addEventListener('click', function(event) {
+            const shareButton = event.target.closest('.share-button');
+            const shareMenu = document.getElementById('shareMenu');
+            
+            if (!shareButton && !shareMenu.contains(event.target)) {
+                shareMenu.classList.add('hidden');
+            }
+        });
+
+        // التعامل مع الروابط العميقة
+        function handleDeepLink(event, platform, identifier) {
+            event.preventDefault();
+            
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile && platformInfo[platform]) {
+                // محاولة فتح التطبيق
+                const deepLink = platformInfo[platform].deepLink(identifier);
+                const webLink = platformInfo[platform].webLink(identifier);
+                
+                // فتح الرابط العميق
+                window.location.href = deepLink;
+                
+                // إذا فشل فتح التطبيق، افتح الرابط العادي بعد ثانية
+                setTimeout(() => {
+                    window.location.href = webLink;
+                }, 1000);
+            } else {
+                // على الكمبيوتر، افتح الرابط العادي
+                window.location.href = platformInfo[platform].webLink(identifier);
+            }
+        }
+
+        // تبديل لوحة التخصيص
+        function toggleCustomization() {
+            const panel = document.getElementById('customizationPanel');
+            panel.classList.toggle('-translate-x-full');
+        }
+
+        // إضافة رابط جديد
+        function addNewLink() {
+            const platform = document.getElementById('platformSelect').value;
+            const linkValue = document.getElementById('linkInput').value;
+            
+            if (linkValue.trim()) {
+                links.push({
+                    platform: platform,
+                    username: linkValue,
+                    active: true
+                });
+                
+                document.getElementById('linkInput').value = '';
+                renderLinks();
+                updateLinkCount();
+            }
+        }
+
+        // عرض الروابط
+        function renderLinks() {
+            const container = document.getElementById('linksContainer');
+            container.innerHTML = '';
+            
+            links.forEach((link, index) => {
+                if (link.active && platformInfo[link.platform]) {
+                    const info = platformInfo[link.platform];
+                    const linkElement = document.createElement('a');
+                    linkElement.href = info.deepLink(link.username);
+                    linkElement.onclick = (e) => handleDeepLink(e, link.platform, link.username);
+                    linkElement.className = `link-card block bg-gradient-to-r ${info.gradient} text-white py-4 px-6 rounded-2xl flex items-center justify-between hover:shadow-xl relative group`;
+                    
+                    linkElement.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="${info.icon} text-2xl ml-3"></i>
+                            <span class="font-semibold">${link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}</span>
+                        </div>
+                        <i class="fas fa-arrow-left"></i>
+                        <button onclick="removeLink(${index})" class="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-red-300 hover:text-red-500">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    
+                    container.appendChild(linkElement);
+                }
+            });
+        }
+
+        // إزالة رابط
+        function removeLink(index) {
+            event.stopPropagation();
+            links[index].active = false;
+            renderLinks();
+            updateLinkCount();
+        }
+
+        // تحديث عدد الروابط
+        function updateLinkCount() {
+            const activeLinks = links.filter(link => link.active).length;
+            document.getElementById('linkCount').textContent = activeLinks;
+        }
+
+        // حفظ التخصيص
+        function saveCustomization() {
+            const name = document.getElementById('nameInput').value;
+            const description = document.getElementById('descriptionInput').value;
+            
+            if (name) {
+                document.getElementById('userName').textContent = name;
+            }
+            
+            if (description) {
+                document.getElementById('userDescription').textContent = description;
+            }
+            
+            // تحديث Meta Tags
+            updateMetaTags();
+            
+            // حفظ في localStorage
+            localStorage.setItem('customization', JSON.stringify({
+                name: name,
+                description: description,
+                links: links
+            }));
+            
+            // إظهار رسالة نجاح
+            showNotification('تم حفظ التغييرات بنجاح!', 'success');
+        }
+
+        // تحميل التخصيص المحفوظ
+        function loadCustomization() {
+            const saved = localStorage.getItem('customization');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.name) {
+                    document.getElementById('userName').textContent = data.name;
+                    document.getElementById('nameInput').value = data.name;
+                }
+                if (data.description) {
+                    document.getElementById('userDescription').textContent = data.description;
+                    document.getElementById('descriptionInput').value = data.description;
+                }
+                if (data.links) {
+                    links = data.links;
+                    renderLinks();
+                    updateLinkCount();
+                }
+            }
+            
+            // تحديث Meta Tags بعد التحميل
+            updateMetaTags();
+        }
+
+        // التعامل مع رفع الصور
+        document.getElementById('profileImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                    updateMetaTags();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('backgroundImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.querySelector('#background img').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('logoImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logoImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // إظهار الإشعارات
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 right-4 z-50 px-6 py-3 rounded-lg text-white transform translate-x-full transition-transform duration-300 ${
+                type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} ml-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // تحديث عدد الزيارات
+        function updateVisitCount() {
+            let count = localStorage.getItem('visitCount') || 0;
+            count = parseInt(count) + 1;
+            localStorage.setItem('visitCount', count);
+            document.getElementById('visitCount').textContent = count;
+        }
+
+        // التهيئة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCustomization();
+            updateVisitCount();
+            loadShareCount();
+            renderLinks();
+            updateLinkCount();
+        });
+
+        // إضافة تأثيرات التمرير
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('#background');
+            parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+        });
+    </script>
+</body>
+</html>
