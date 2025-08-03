@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بطاقتي الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+        
+        * {
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .link-card {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-img {
+            transition: all 0.3s ease;
+        }
+        
+        .profile-img:hover {
+            transform: scale(1.05);
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        .share-button {
+            transition: all 0.3s ease;
+        }
+        
+        .share-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .share-menu {
+            transform-origin: top left;
+            transition: all 0.3s ease;
+        }
+        
+        .share-option {
+            transition: all 0.2s ease;
+        }
+        
+        .share-option:hover {
+            transform: translateX(-5px);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen custom-scrollbar">
+    <!-- خلفية قابلة للتخصيص -->
+    <div id="background" class="fixed inset-0 z-0 opacity-20">
+        <img src="https://picsum.photos/seed/background/1920/1080.jpg" alt="Background" class="w-full h-full object-cover">
+    </div>
+
+    <!-- زر التخصيص -->
+    <button onclick="toggleCustomization()" class="fixed top-4 left-4 z-50 bg-white/20 backdrop-blur-md text-white p-3 rounded-full hover:bg-white/30 transition-all duration-300">
+        <i class="fas fa-cog text-xl"></i>
+    </button>
+
+    <!-- زر المشاركة -->
+    <div class="fixed top-4 right-4 z-50">
+        <button onclick="toggleShareMenu()" class="share-button bg-white/20 backdrop-blur-md text-white p-3 rounded-full hover:bg-white/30 transition-all duration-300 pulse">
+            <i class="fas fa-share-alt text-xl"></i>
+        </button>
+        
+        <!-- قائمة المشاركة -->
+        <div id="shareMenu" class="absolute top-16 right-0 glass-effect rounded-2xl p-4 w-64 hidden share-menu">
+            <h4 class="text-white font-semibold mb-3 text-center">مشاركة الصفحة</h4>
+            <div class="space-y-2">
+                <!-- نسخ الرابط -->
+                <button onclick="copyLink()" class="share-option w-full bg-white/10 hover:bg-white/20 text-white py-3 px-4 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-link ml-3"></i>
+                        <span>نسخ الرابط</span>
+                    </div>
+                    <i class="fas fa-copy text-sm opacity-70"></i>
+                </button>
+                
+                <!-- WhatsApp -->
+                <button onclick="shareOnWhatsApp()" class="share-option w-full bg-green-500/20 hover:bg-green-500/30 text-white py-3 px-4 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fab fa-whatsapp ml-3"></i>
+                        <span>WhatsApp</span>
+                    </div>
+                    <i class="fas fa-arrow-left text-sm opacity-70"></i>
+                </button>
+                
+                <!-- Facebook -->
+                <button onclick="shareOnFacebook()" class="share-option w-full bg-blue-600/20 hover:bg-blue-600/30 text-white py-3 px-4 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fab fa-facebook ml-3"></i>
+                        <span>Facebook</span>
+                    </div>
+                    <i class="fas fa-arrow-left text-sm opacity-70"></i>
+                </button>
+                
+                <!-- Twitter -->
+                <button onclick="shareOnTwitter()" class="share-option w-full bg-blue-400/20 hover:bg-blue-400/30 text-white py-3 px-4 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fab fa-twitter ml-3"></i>
+                        <span>Twitter</span>
+                    </div>
+                    <i class="fas fa-arrow-left text-sm opacity-70"></i>
+                </button>
+                
+                <!-- Telegram -->
+                <button onclick="shareOnTelegram()" class="share-option w-full bg-blue-500/20 hover:bg-blue-500/30 text-white py-3 px-4 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fab fa-telegram ml-3"></i>
+                        <span>Telegram</span>
+                    </div>
+                    <i class="fas fa-arrow-left text-sm opacity-70"></i>
+                </button>
+                
+                <!-- Email -->
+                <button onclick="shareViaEmail()" class="share-option w-full bg-red-500/20 hover:bg-red-500/30 text-white py-3 px-4 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-envelope ml-3"></i>
+                        <span>البريد الإلكتروني</span>
+                    </div>
+                    <i class="fas fa-arrow-left text-sm opacity-70"></i>
+                </button>
+                
+                <!-- مشاركة أصلية -->
+                <button onclick="nativeShare()" class="share-option w-full bg-purple-500/20 hover:bg-purple-500/30 text-white py-3 px-4 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-share-nodes ml-3"></i>
+                        <span>مشاركة</span>
+                    </div>
+                    <i class="fas fa-arrow-left text-sm opacity-70"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- لوحة التخصيص -->
+    <div id="customizationPanel" class="fixed top-0 left-0 h-full w-80 bg-white/95 backdrop-blur-lg z-40 transform -translate-x-full transition-transform duration-300 shadow-2xl">
+        <div class="p-6 h-full overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">تخصيص الصفحة</h3>
+                <button onclick="toggleCustomization()" class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- تخصيص الصورة الشخصية -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">الصورة الشخصية</label>
+                <input type="file" id="profileImageInput" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+            </div>
+
+            <!-- تخصيص الخلفية -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">صورة الخلفية</label>
+                <input type="file" id="backgroundImageInput" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+            </div>
+
+            <!-- تخصيص اللوجو -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">اللوجو</label>
+                <input type="file" id="logoImageInput" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+            </div>
+
+            <!-- تخصيص الاسم -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">الاسم</label>
+                <input type="text" id="nameInput" placeholder="أدخل اسمك" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            </div>
+
+            <!-- تخصيص الوصف -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
+                <textarea id="descriptionInput" rows="3" placeholder="أدخل وصفًا قصيرًا" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+            </div>
+
+            <!-- إضافة رابط جديد -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-gray-800 mb-3">إضافة رابط جديد</h4>
+                <div class="space-y-3">
+                    <select id="platformSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option value="instagram">Instagram</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="website">موقع ويب</option>
+                    </select>
+                    <input type="text" id="linkInput" placeholder="أدخل الرابط أو اسم المستخدم" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    <button onclick="addNewLink()" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors duration-300">
+                        <i class="fas fa-plus ml-2"></i>إضافة رابط
+                    </button>
+                </div>
+            </div>
+
+            <!-- حفظ التغييرات -->
+            <button onclick="saveCustomization()" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors duration-300 font-semibold">
+                <i class="fas fa-save ml-2"></i>حفظ التغييرات
+            </button>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md fade-in">
+            <!-- اللوجو -->
+            <div id="logoContainer" class="text-center mb-6 slide-in">
+                <img id="logoImage" src="https://picsum.photos/seed/logo/100/100.jpg" alt="Logo" class="w-20 h-20 mx-auto rounded-full profile-img">
+            </div>
+
+            <!-- بطاقة الملف الشخصي -->
+            <div class="glass-effect rounded-3xl p-8 text-white text-center shadow-2xl">
+                <!-- الصورة الشخصية -->
+                <div class="mb-6">
+                    <img id="profileImage" src="https://picsum.photos/seed/profile/150/150.jpg" alt="Profile" class="w-32 h-32 mx-auto rounded-full border-4 border-white/30 profile-img">
+                </div>
+
+                <!-- الاسم -->
+                <h1 id="userName" class="text-3xl font-bold mb-2">اسم المستخدم</h1>
+
+                <!-- الوصف -->
+                <p id="userDescription" class="text-lg mb-8 opacity-90">مرحباً! أنا هنا لأشارككم عالمي</p>
+
+                <!-- الروابط -->
+                <div id="linksContainer" class="space-y-4">
+                    <!-- Instagram -->
+                    <a href="instagram://user?username=yourusername" onclick="handleDeepLink(event, 'instagram', 'yourusername')" class="link-card block bg-gradient-to-r from-pink-500 to-purple-600 text-white py-4 px-6 rounded-2xl flex items-center justify-between hover:shadow-xl">
+                        <div class="flex items-center">
+                            <i class="fab fa-instagram text-2xl ml-3"></i>
+                            <span class="font-semibold">Instagram</span>
+                        </div>
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+
+                    <!-- TikTok -->
+                    <a href="tiktok://user/@yourusername" onclick="handleDeepLink(event, 'tiktok', 'yourusername')" class="link-card block bg-gradient-to-r from-black to-gray-800 text-white py-4 px-6 rounded-2xl flex items-center justify-between hover:shadow-xl">
+                        <div class="flex items-center">
+                            <i class="fab fa-tiktok text-2xl ml-3"></i>
+                            <span class="font-semibold">TikTok</span>
+                        </div>
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+
+                    <!-- WhatsApp -->
+                    <a href="whatsapp://send?phone=1234567890" onclick="handleDeepLink(event, 'whatsapp', '1234567890')" class="link-card block bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-2xl flex items-center justify-between hover:shadow-xl">
+                        <div class="flex items-center">
+                            <i class="fab fa-whatsapp text-2xl ml-3"></i>
+                            <span class="font-semibold">WhatsApp</span>
+                        </div>
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+
+                    <!-- Twitter -->
+                    <a href="twitter://user?screen_name=yourusername" onclick="handleDeepLink(event, 'twitter', 'yourusername')" class="link-card block bg-gradient-to-r from-blue-400 to-blue-600 text-white py-4 px-6 rounded-2xl flex items-center justify-between hover:shadow-xl">
+                        <div class="flex items-center">
+                            <i class="fab fa-twitter text-2xl ml-3"></i>
+                            <span class="font-semibold">Twitter</span>
+                        </div>
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+
+                    <!-- YouTube -->
+                    <a href="vnd.youtube://yourchannel" onclick="handleDeepLink(event, 'youtube', 'yourchannel')" class="link-card block bg-gradient-to-r from-red-500 to-red-600 text-white py-4 px-6 rounded-2xl flex items-center justify-between hover:shadow-xl">
+                        <div class="flex items-center">
+                            <i class="fab fa-youtube text-2xl ml-3"></i>
+                            <span class="font-semibold">YouTube</span>
+                        </div>
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                </div>
+
+                <!-- إحصائيات -->
+                <div class="mt-8 flex justify-around text-center">
+                    <div>
+                        <div class="text-2xl font-bold" id="visitCount">0</div>
+                        <div class="text-sm opacity-75">زيارة</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold" id="linkCount">5</div>
+                        <div class="text-sm opacity-75">رابط</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold" id="shareCount">0</div>
+                        <div class="text-sm opacity-75">مشاركة</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- حقوق النشر -->
+            <div class="text-center mt-6 text-white/70 text-sm">
+                <p>© 2024 جميع الحقوق محفوظة</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات الروابط
+        let links = [
+            { platform: 'instagram', username: 'yourusername', active: true },
+            { platform: 'tiktok', username: 'yourusername', active: true },
+            { platform: 'whatsapp', username: '1234567890', active: true },
+            { platform: 'twitter', username: 'yourusername', active: true },
+            { platform: 'youtube', username: 'yourchannel', active: true }
+        ];
+
+        // معلومات المنصات
+        const platformInfo = {
+            instagram: {
+                icon: 'fab fa-instagram',
+                gradient: 'from-pink-500 to-purple-600',
+                deepLink: (username) => `instagram://user?username=${username}`,
+                webLink: (username) => `https://instagram.com/${username}`
+            },
+            tiktok: {
+                icon: 'fab fa-tiktok',
+                gradient: 'from-black to-gray-800',
+                deepLink: (username) => `tiktok://user/@${username}`,
+                webLink: (username) => `https://tiktok.com/@${username}`
+            },
+            whatsapp: {
+                icon: 'fab fa-whatsapp',
+                gradient: 'from-green-500 to-green-600',
+                deepLink: (phone) => `whatsapp://send?phone=${phone}`,
+                webLink: (phone) => `https://wa.me/${phone}`
+            },
+            twitter: {
+                icon: 'fab fa-twitter',
+                gradient: 'from-blue-400 to-blue-600',
+                deepLink: (username) => `twitter://user?screen_name=${username}`,
+                webLink: (username) => `https://twitter.com/${username}`
+            },
+            youtube: {
+                icon: 'fab fa-youtube',
+                gradient: 'from-red-500 to-red-600',
+                deepLink: (channel) => `vnd.youtube://${channel}`,
+                webLink: (channel) => `https://youtube.com/${channel}`
+            },
+            facebook: {
+                icon: 'fab fa-facebook',
+                gradient: 'from-blue-600 to-blue-800',
+                deepLink: (username) => `fb://profile/${username}`,
+                webLink: (username) => `https://facebook.com/${username}`
+            },
+            linkedin: {
+                icon: 'fab fa-linkedin',
+                gradient: 'from-blue-700 to-blue-900',
+                deepLink: (username) => `linkedin://profile/${username}`,
+                webLink: (username) => `https://linkedin.com/in/${username}`
+            },
+            website: {
+                icon: 'fas fa-globe',
+                gradient: 'from-purple-500 to-indigo-600',
+                deepLink: (url) => url,
+                webLink: 
